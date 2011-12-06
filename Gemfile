@@ -16,8 +16,11 @@ group :development do
   gem 'guard-yard'
   gem 'redcarpet'
 
-  if HOST_OS =~ /linux/i
+  case HOST_OS
+  when /linux/i
     gem 'rb-inotify', require: false
     gem 'libnotify', require: false
+  when /darwin/i
+    gem 'growl_notify', require: false
   end
 end
