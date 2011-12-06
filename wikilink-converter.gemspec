@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{wikilink-converter}
-  s.version = "0.1.0"
+  s.name = "wikilink-converter"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = [%q{Ian Yang}]
-  s.date = %q{2011-12-04}
-  s.description = %q{convert [[WikiLink]] to <a>}
-  s.email = %q{me@iany.me}
+  s.authors = ["Ian Yang"]
+  s.date = "2011-12-06"
+  s.description = "convert [[WikiLink]] to <a>"
+  s.email = "me@iany.me"
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.markdown"
@@ -44,11 +44,11 @@ Gem::Specification.new do |s|
     "spec/wikilink/converter_spec.rb",
     "wikilink-converter.gemspec"
   ]
-  s.homepage = %q{http://github.com/doitian/wikilink-converter}
-  s.licenses = [%q{MIT}]
-  s.require_paths = [%q{lib}]
-  s.rubygems_version = %q{1.8.6}
-  s.summary = %q{convert [[WikiLink]] to <a>}
+  s.homepage = "http://github.com/doitian/wikilink-converter"
+  s.licenses = ["MIT"]
+  s.require_paths = ["lib"]
+  s.rubygems_version = "1.8.10"
+  s.summary = "convert [[WikiLink]] to <a>"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
@@ -64,8 +64,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<guard-bundler>, [">= 0"])
       s.add_development_dependency(%q<guard-yard>, [">= 0"])
       s.add_development_dependency(%q<redcarpet>, [">= 0"])
-      s.add_development_dependency(%q<rb-inotify>, [">= 0"])
-      s.add_development_dependency(%q<libnotify>, [">= 0"])
+      s.add_development_dependency(%q<growl_notify>, [">= 0"])
     else
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<yard>, [">= 0"])
@@ -77,8 +76,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<guard-bundler>, [">= 0"])
       s.add_dependency(%q<guard-yard>, [">= 0"])
       s.add_dependency(%q<redcarpet>, [">= 0"])
-      s.add_dependency(%q<rb-inotify>, [">= 0"])
-      s.add_dependency(%q<libnotify>, [">= 0"])
+      s.add_dependency(%q<growl_notify>, [">= 0"])
     end
   else
     s.add_dependency(%q<rspec>, [">= 0"])
@@ -91,8 +89,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<guard-bundler>, [">= 0"])
     s.add_dependency(%q<guard-yard>, [">= 0"])
     s.add_dependency(%q<redcarpet>, [">= 0"])
-    s.add_dependency(%q<rb-inotify>, [">= 0"])
-    s.add_dependency(%q<libnotify>, [">= 0"])
+    s.add_dependency(%q<growl_notify>, [">= 0"])
   end
 end
 
