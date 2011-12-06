@@ -57,7 +57,6 @@ module Wikilink
 
       def run(namespace, run_options)
         if converter = namespace_converter(namespace)
-        p run_options
           converter.run(run_options)
         elsif converter = instance_method_converter(namespace)
           converter.call(run_options)
