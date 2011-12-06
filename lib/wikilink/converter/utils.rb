@@ -33,5 +33,19 @@ module Wikilink
         "<a #{attributes}href=\"#{CGI.escape_html url}\">#{CGI.escape_html name}</a>"
       end
     end
+
+    module HTMLAttributes
+      def html_class(extra_classes = nil)
+        classes = []
+        if respond_to? :options
+          classes << options[:class]
+          classes << 'external' if options[:external]
+        end
+
+        classes << extra_classes if extra_classes
+
+        classes.flatten.join(' ').split.uniq.join(' ')
+      end
+    end
   end
 end

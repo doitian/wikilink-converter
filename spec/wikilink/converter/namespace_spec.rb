@@ -9,7 +9,7 @@ shared_examples 'converter that can forward to given block' do |klass|
     describe '#run' do
       subject { converter.method(:run) }
       it 'forwards to the block' do
-        subject.should convert(':', 'Home', 'Home', '/').to('it works')
+        subject.should convert(name: 'Home', path: 'Home').to('it works')
       end
     end
   end
@@ -22,7 +22,7 @@ shared_examples 'converter that can forward to given block' do |klass|
     describe '#run' do
       subject { converter.method(:run) }
       it 'forwards to the block and allows options access' do
-        subject.should convert(':', 'Home', 'Home', '/').to('fake')
+        subject.should convert(name: 'Home', path: 'Home').to('fake')
       end
     end
   end
@@ -33,7 +33,7 @@ describe Wikilink::Converter::Namespace do
   describe '#run' do
     subject { converter.method(:run) }
     it 'does nothing' do
-      subject.should convert(':', 'Home', 'Home', '/').to(nil)
+      subject.should convert(name: 'Home', path: 'Home').to(nil)
     end
   end
 
@@ -41,14 +41,16 @@ describe Wikilink::Converter::Namespace do
 end
 
 describe Wikilink::Converter::Namespace::Default do
+  let(:run_options) { { name: 'Name', path: 'Home' } }
+
   shared_examples 'converter that keeps query fragment only path untouched' do
-    it { should convert(':', '#toc-1', 'Header 1', '/').
+    it { should convert(path: '#toc-1', name: 'Header 1').
       to('<a href="#toc-1">Header 1</a>')
     }
-    it { should convert(':', '?q=keyword', 'Search keyword', '/').
+    it { should convert(path: '?q=keyword', name: 'Search keyword').
       to('<a href="?q=keyword">Search keyword</a>')
     }
-    it { should convert(':', '?q=keyword#page-10', 'Search keyword (page 10)', '/').
+    it { should convert(path: '?q=keyword#page-10', name: 'Search keyword (page 10)').
       to('<a href="?q=keyword#page-10">Search keyword (page 10)</a>')
     }
   end
@@ -56,7 +58,7 @@ describe Wikilink::Converter::Namespace::Default do
   let(:converter) { self.class.describes.new }
   describe '#run' do
     subject { converter.method(:run) }
-    it { should convert(':', 'Home', 'Name', '/').
+    it { should convert(run_options).
       to('<a href="Home">Name</a>')
     }
     it_behaves_like 'converter that keeps query fragment only path untouched'
@@ -74,7 +76,7 @@ describe Wikilink::Converter::Namespace::Default do
     let(:converter) { self.class.describes.new suffix: '/index.html' }
     describe '#run' do
       subject { converter.method(:run) }
-      it { should convert(':', 'Home', 'Name', '/').
+      it { should convert(run_options).
         to('<a href="Home/index.html">Name</a>')
       }
       it_behaves_like 'converter that keeps query fragment only path untouched'
@@ -85,7 +87,7 @@ describe Wikilink::Converter::Namespace::Default do
     let(:converter) { self.class.describes.new external: true }
     describe '#run' do
       subject { converter.method(:run) }
-      it { should convert(':', 'Home', 'Name', '/').
+      it { should convert(run_options).
         to('<a class="external" href="Home">Name</a>')
       }
     end
@@ -94,7 +96,7 @@ describe Wikilink::Converter::Namespace::Default do
     let(:converter) { self.class.describes.new class: 'fancy' }
     describe '#run' do
       subject { converter.method(:run) }
-      it { should convert(':', 'Home', 'Name', '/').
+      it { should convert(run_options).
         to('<a class="fancy" href="Home">Name</a>')
       }
     end
@@ -103,7 +105,7 @@ describe Wikilink::Converter::Namespace::Default do
     let(:converter) { self.class.describes.new external: true, class: 'fancy' }
     describe '#run' do
       subject { converter.method(:run) }
-      it { should convert(':', 'Home', 'Name', '/').
+      it { should convert(run_options).
         to('<a class="fancy external" href="Home">Name</a>')
       }
     end

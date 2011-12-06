@@ -4,42 +4,6 @@ describe Wikilink::Converter::Site do
   DEFAULT_NAMESPACE = Wikilink::Converter::Site::DEFAULT_NAMESPACE
   CURRENT_SITE_NAME = Wikilink::Converter::Site::CURRENT_SITE_NAME
 
-  # { subject.foo }.should forward(:bar).to(handler).with(any_args)
-  RSpec::Matchers.define :forward do |message|
-    match do |block|
-      block.call
-      @handler.received_message?(message, *@arguments)
-    end
-
-    description do
-      "forward to message #{message} to #{@handler.inspect}"
-    end
-
-    failure_message_for_should do |block|
-      <<MESSAGE
-expected forward #{message}
-      to #{block}
-    with #{@arguments.inspect}
-MESSAGE
-    end
-
-    failure_message_for_should_not do |block|
-      <<MESSAGE
-expected not forward #{message}
-      to #{block}
-    with #{@arguments.inspect}
-MESSAGE
-    end
-
-    chain :with do |*arguments|
-      @arguments = arguments
-    end
-
-    chain :to do |handler|
-      @handler = handler
-    end
-  end
-
   shared_examples 'configuring a new instance of class as namespace handler' do |namespace|
     # require setting converter to an instance of Site
     context 'with converter class' do
@@ -62,7 +26,7 @@ MESSAGE
         SpecNamespace.should_receive(:new).once.and_return(namespace_converter)
         call
         namespace_converter.should_receive(:run).and_return('it works')
-        converter.run(':', namespace, 'Home', 'Name', '/').should eq('it works')
+        converter.run(namespace, path: 'Home', name: 'Name').should eq('it works')
       end
 
       context 'and options' do
@@ -82,6 +46,7 @@ MESSAGE
 
   let(:default_namespace) { double(:default_namespace).as_null_object }
   let(:namespace) { double(:namespace).as_null_object }
+  let(:run_options) { { path: 'Home', name: 'Name' } }
   before { Wikilink::Converter::Namespace::Default.stub(:new) { default_namespace } }
 
   shared_examples ''
@@ -133,8 +98,8 @@ MESSAGE
 
     describe '#run' do
       it 'delegates default namespace to Namespace::Default instance' do
-        ->{ converter.run(':', DEFAULT_NAMESPACE, 'Home', 'Name', '/') }.
-          should forward(:run).to(default_namespace).with(':', 'Home', 'Name', '/')
+        default_namespace.should_receive(:run).with(hash_including(run_options))
+        converter.run(DEFAULT_NAMESPACE, run_options)
       end
     end
 
@@ -187,33 +152,33 @@ MESSAGE
         end
       end
       context 'with other namespace name' do
-        let(:name) { 'topics' }
+        let(:namespace_name) { 'topics' }
         let(:klass) { Wikilink::Converter::Namespace }
 
         it 'creates a new Wikilink::Converter::Namespace instance' do
           klass.should_receive(:new)
-          converter.on_namespace name
+          converter.on_namespace namespace_name
         end
         it 'initializes Wikilink::Converter::Namespace instance with option :site_name' do
           klass.should_receive(:new).with(hash_including(site_name: site_name))
-          converter.on_namespace name
+          converter.on_namespace namespace_name
         end
         it 'initializes Wikilink::Converter::Namespace instance with option :name' do
-          klass.should_receive(:new).with(hash_including(name: name))
-          converter.on_namespace name
+          klass.should_receive(:new).with(hash_including(name: namespace_name))
+          converter.on_namespace namespace_name
         end
         it 'uses the instance of Wikilink::Converter::Namespace as new namespace converter' do
           klass.should_receive(:new).and_return(namespace)
-          converter.on_namespace name
+          converter.on_namespace namespace_name
           namespace.should_receive(:run).and_return('it works')
-          converter.run(':', name, 'Home', 'Name', '/').should eq('it works')
+          converter.run(namespace_name, run_options).should eq('it works')
         end
 
         context 'with object' do
           it 'uses that object as new namespace converter' do
-            converter.on_namespace name, namespace
+            converter.on_namespace namespace_name, namespace
             namespace.should_receive(:run).and_return('it works')
-            converter.run(':', name, 'Home', 'Name', '/').should eq('it works')
+            converter.run(namespace_name, run_options).should eq('it works')
           end
         end
 
@@ -226,7 +191,7 @@ MESSAGE
         it 'uses that object as new namespace converter' do
           converter.on_namespace namespace
           namespace.should_receive(:run).and_return('it works')
-          converter.run(':', DEFAULT_NAMESPACE, 'Home', 'Name', '/').should eq('it works')
+          converter.run(DEFAULT_NAMESPACE, run_options).should eq('it works')
         end
       end
 
@@ -276,20 +241,20 @@ MESSAGE
 
     describe '#run' do
       it 'delegates default namespace to Namespace::Default instance' do
-        ->{ converter.run(':', DEFAULT_NAMESPACE, 'Home', 'Name', '/') }.
-          should forward(:run).to(default_namespace).with(':', 'Home', 'Name', '/')
+        default_namespace.should_receive(:run).with(hash_including(run_options))
+        converter.run(DEFAULT_NAMESPACE, run_options)
       end
 
-      context 'with method #on_namespace_topics defined' do
+      context 'with method #run_namespace_topics defined' do
         before { Wikilink::Converter::Namespace::Default.unstub(:new) }
         class SpecSite < Wikilink::Converter::Site
-          def on_namespace_topics(colon, path, name, current_page)
+          def run_namespace_topics(run_options)
             'it works'
           end
         end
         let(:converter) { SpecSite.new }
-        it 'invokes #on_namespace_topics to handle namespace topics' do
-          converter.run(':', 'topics', 'Home', 'Name', '/').should eq('it works')
+        it 'invokes #run_namespace_topics to handle namespace topics' do
+          converter.run('topics', run_options).should eq('it works')
         end
 
         context 'but user has override it' do
@@ -300,21 +265,21 @@ MESSAGE
           }
 
           it 'uses user version' do
-            converter.run(':', 'topics', 'Home', 'Name', '/').should eq('use this version')
+            converter.run('topics', run_options).should eq('use this version')
           end
         end
       end
 
-      context 'with method #on_namespace_ defined' do
+      context 'with method #run_default_namespace defined' do
         before { Wikilink::Converter::Namespace::Default.unstub(:new) }
         class SpecSite < Wikilink::Converter::Site
-          def on_namespace_(colon, path, name, current_page)
+          def run_default_namespace(run_options)
             'it works'
           end
         end
         let(:converter) { SpecSite.new }
-        it 'invokes #on_namespace_ to handle default namespace' do
-          converter.run(':', DEFAULT_NAMESPACE, 'Home', 'Name', '/').should eq('it works')
+        it 'invokes #run_default_namespace to handle default namespace' do
+          converter.run(DEFAULT_NAMESPACE, run_options).should eq('it works')
         end
 
         context 'but user has override it' do
@@ -325,7 +290,7 @@ MESSAGE
           }
 
           it 'uses user version' do
-            converter.run(':', DEFAULT_NAMESPACE, 'Home', 'Name', '/').should eq('use this version')
+            converter.run(DEFAULT_NAMESPACE, run_options).should eq('use this version')
           end
         end
       end

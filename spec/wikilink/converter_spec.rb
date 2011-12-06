@@ -70,6 +70,14 @@ describe Wikilink::Converter do
         end
       end
     end
+    it 'passes options to namespace converter' do
+      Wikilink::Converter::Site.any_instance.should_receive(:run) { |*args|
+        p args
+        args.last[:hello].should eq('world')
+        'result'
+      }
+      converter.run('[[Hello]]', hello: 'world')
+    end
   end
 
   describe '#on_default_site' do

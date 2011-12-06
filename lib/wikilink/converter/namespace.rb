@@ -5,6 +5,7 @@ module Wikilink
     # Namespace converter
     class Namespace
       include LinkHelper
+      include HTMLAttributes
 
       DEFAULT_NAME = ''
 
@@ -19,16 +20,17 @@ module Wikilink
         self
       end
 
-      def run(colon, path, name, current_page)
+      def run(run_options)
         if @block
-          instance_exec(colon, path, name, current_page, &@block)
+          instance_exec(run_options, &@block)
         end
       end
 
       class Default < Namespace
-        def run(colon, path, name, current_page)
+        def run(run_options)
           return super if @block
 
+          path = run_options[:path].to_s
           path, fragment = path.split('#', 2)
           path, query = path.split('?', 2)
 
@@ -37,7 +39,7 @@ module Wikilink
 
           url = to_url(path, fragment, query)
 
-          link_to(name, url, :class => html_class)
+          link_to(run_options[:name], url, :class => html_class(run_options[:class]))
         end
 
         def to_url(path, fragment, query)
@@ -47,11 +49,6 @@ module Wikilink
             [options[:prefix], path, options[:suffix], query, fragment].join
           end
         end
-      end
-
-      protected
-      def html_class
-        [options[:class], ('external' if options[:external])]
       end
     end
   end

@@ -6,6 +6,7 @@ module Wikilink
     module Sites
       class RubyChina < Wikilink::Converter::Site
         include Wikilink::Converter::LinkHelper
+        include Wikilink::Converter::HTMLAttributes
 
         def initialize(options = {})
           if options[:name] == CURRENT_SITE
@@ -18,14 +19,14 @@ module Wikilink
           super(options)
         end
 
-        def on_namespace_topic(colon, path, name, current_page)
-          path = "#{options[:domain]}topics/#{path}"
-          link_to name, path, :class => html_class
+        def run_namespace_topic(run_options)
+          path = "#{options[:domain]}topics/#{run_options[:path]}"
+          link_to run_options[:name], path, :class => html_class(run_options[:class])
         end
 
-        def on_namespace_node(colon, path, name, current_page)
-          path = "#{options[:domain]}topics/node#{path}"
-          link_to name, path, :class => html_class
+        def run_namespace_node(run_options)
+          path = "#{options[:domain]}topics/node#{run_options[:path]}"
+          link_to run_options[:name], path, :class => html_class(run_options[:class])
         end
       end
 

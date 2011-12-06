@@ -39,7 +39,7 @@ module Wikilink
       yield self if block_given?
     end
 
-    def run(text, current_page = nil)
+    def run(text, run_options = {})
       text.gsub(/(^|.)\[\[(.*?[^:])\]\]/) do |match|
         prefix, inner = $1, $2.strip
         if prefix == '\\'
@@ -61,12 +61,13 @@ module Wikilink
           end
           
           if name.to_s.empty?
-            name = resolve_name(inner, current_page)
+            name = resolve_name(inner, run_options)
           end
 
           # ignore malformed wikilink
           if valid?(site, namespace, path)
-            result = convert_link(colon, site, namespace, path, name, current_page)
+            run_options = run_options.merge(path: path, name: name, colon: colon)
+            result = convert_link(site, namespace, run_options)
             result ? ($1 + result) : match
           else
             match
@@ -145,15 +146,15 @@ module Wikilink
       handler.call(argument) if handler
     end
 
-    def convert_link(colon, site, namespace, path, name, current_page)
+    def convert_link(site, namespace, run_options)
       converter = site_converter(site)
-      converter.run(colon, namespace, path, name, current_page) if converter
+      converter.run(namespace, run_options) if converter
     end
 
     # TODO: relative
     # TODO: ruby (computer) -> ruby
     # TODO: Shanghai, China -> Shanghai
-    def resolve_name(inner_text, current_path)
+    def resolve_name(inner_text, run_options)
       if inner_text.end_with?('|')
         inner_text.chop.chomp('/').split(%r{[:/]}, 2).last
       else

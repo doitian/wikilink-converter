@@ -58,17 +58,13 @@ module Wikilink
       end
       alias_method :default_namespace, :on_default_namespace
 
-      def run(colon, namespace, path, name, current_page)
+      def run(namespace, run_options)
         if converter = namespace_converter(namespace)
-          converter.run(colon, path, name, current_page)
+        p run_options
+          converter.run(run_options)
         elsif converter = instance_method_converter(namespace)
-          converter.call(colon, path, name, current_page)
+          converter.call(run_options)
         end
-      end
-
-      protected
-      def html_class
-        [options[:class], ('external' if options[:external])]
       end
 
       private
@@ -79,7 +75,11 @@ module Wikilink
 
       def instance_method_converter(namespace)
         namespace = namespace.to_s.downcase
-        try_message = "on_namespace_#{namespace}".to_sym
+        if namespace == DEFAULT_NAMESPACE
+          try_message = :run_default_namespace
+        else
+          try_message = "run_namespace_#{namespace}".to_sym
+        end
         method(try_message) if respond_to?(try_message)
       end
 
