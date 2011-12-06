@@ -39,7 +39,7 @@ describe Wikilink::Converter do
     context 'in namespace topics' do
       context 'with default handler' do
         before do
-          converter.on('topics', Wikilink::Converter::Namespace::Default)
+          converter.namespace('topics', Wikilink::Converter::Namespace::Default)
         end
         it { should convert('[[topics:World]]').to('<a href="/World">topics:World</a>') }
       end
@@ -63,7 +63,7 @@ describe Wikilink::Converter do
       context 'in namespace topics' do
         context 'with default handler' do
           before do
-            converter.on('topics', Wikilink::Converter::Namespace::Default)
+            converter.namespace('topics', Wikilink::Converter::Namespace::Default)
           end
           it { should convert('[[topics:World|]]').to('<a href="/World">World</a>') }
           it { should convert('[[:topics:World|]]').to('<a href="/World">World</a>') }
@@ -80,14 +80,14 @@ describe Wikilink::Converter do
     end
   end
 
-  describe '#on_default_site' do
-    it 'is a shortcut of #on_site' do
-      converter.should_receive(:on_site).with(CURRENT_SITE, 'arg')
-      converter.on_current_site 'arg'
+  describe '#default_site' do
+    it 'is a shortcut of #site' do
+      converter.should_receive(:site).with(CURRENT_SITE, 'arg')
+      converter.current_site 'arg'
     end
   end
 
-  describe '#on_site' do
+  describe '#site' do
     let(:default_site) { double(:default_site).as_null_object }
     let(:site) { double(:site).as_null_object }
     before { Wikilink::Converter::Site.stub(:new) { default_site } }
@@ -97,10 +97,10 @@ describe Wikilink::Converter do
       it 'does not create new instance' do
         converter # call it to initialize first
         Wikilink::Converter::Site.should_not_receive :new
-        converter.on_site
+        converter.site
       end
       it 'yields the default site converter' do
-        converter.on_site do |site_converter|
+        converter.site do |site_converter|
           site_converter.should eq(default_site)
         end
       end
@@ -110,17 +110,17 @@ describe Wikilink::Converter do
       it 'creates a new instance of Wikilink::Converter::Site as the site converter' do
         converter # call it to initialize first
         Wikilink::Converter::Site.should_receive(:new).once
-        converter.on_site 'wikipedia'
+        converter.site 'wikipedia'
       end
       it 'initializes the instance with option :name' do
         converter # call it to initialize first
         Wikilink::Converter::Site.should_receive(:new).with(hash_including(name: 'wikipedia')).once
-        converter.on_site 'wikipedia'
+        converter.site 'wikipedia'
       end
       it 'yields the new converter instance' do
         converter # call it to initialize first
         Wikilink::Converter::Site.should_receive(:new).once.and_return(site)
-        converter.on_site('wikipedia') do |site_converter|
+        converter.site('wikipedia') do |site_converter|
           site_converter.should eq(site)
         end
       end
@@ -129,7 +129,7 @@ describe Wikilink::Converter do
         it 'initializes the instance with given options' do
           converter # call it to initialize first
           Wikilink::Converter::Site.should_receive(:new).with(hash_including(foo: :bar)).once
-          converter.on_site 'wikipedia', options
+          converter.site 'wikipedia', options
         end
       end
     end
@@ -138,10 +138,10 @@ describe Wikilink::Converter do
       it 'does not create new instance' do
         converter # call it to initialize first
         Wikilink::Converter::Site.should_not_receive :new
-        converter.on_site site
+        converter.site site
       end
       it 'yields the object' do
-        converter.on_site(site) do |site_converter|
+        converter.site(site) do |site_converter|
           site_converter.should eq(site)
         end
       end
@@ -160,7 +160,7 @@ describe Wikilink::Converter do
 
     context 'with handler registered on action toc' do
       before {
-        converter.on_action('toc') do |arg|
+        converter.action('toc') do |arg|
           "Table of Contents#{arg}"
         end
       }

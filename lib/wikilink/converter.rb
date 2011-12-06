@@ -35,7 +35,7 @@ module Wikilink
       @action_handlers = {}
       @options = options
 
-      on_site(CURRENT_SITE, @options)
+      site(CURRENT_SITE, @options)
       yield self if block_given?
     end
 
@@ -89,14 +89,10 @@ module Wikilink
       end
     end
 
-    def_delegator :@current_site_converter, :on_namespace
-    alias_method :on, :on_namespace
-    alias_method :namespace, :on_namespace
+    def_delegator :@current_site_converter, :namespace
+    def_delegator :@current_site_converter, :default_namespace
 
-    def_delegator :@current_site_converter, :on_default_namespace
-    alias_method :default_namespace, :on_default_namespace
-
-    def on_site(*args)
+    def site(*args)
       site, converter, options = extract_arguments(*args)
       options = @options.merge(options)
       site = CURRENT_SITE if site.to_s.empty?
@@ -112,19 +108,15 @@ module Wikilink
       set_site_converter site, converter
       self
     end
-    alias_method :site, :on_site
 
-    def on_current_site(*args, &block)
-      on_site(CURRENT_SITE, *args, &block)
+    def current_site(*args, &block)
+      site(CURRENT_SITE, *args, &block)
     end
-    alias_method :current_site, :on_current_site
 
-    def on_action(action, &block)
-      @action_handlers[action.to_s.downcase] = block
+    def action(name, &block)
+      @action_handlers[name.to_s.downcase] = block
       self
     end
-    alias_method :action, :on_action
-
 
     private
     def site_converter(site)

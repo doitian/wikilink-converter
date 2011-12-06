@@ -18,12 +18,12 @@ module Wikilink
         @options[:prefix] ||= '/' if is_current_site
         @namespace_converters = {}
 
-        on_namespace(DEFAULT_NAMESPACE)
+        namespace(DEFAULT_NAMESPACE)
         
         yield self if block_given?
       end
 
-      def on_namespace(*args, &block)
+      def namespace(*args, &block)
         namespace, converter, options = extract_arguments(*args)
         namespace = DEFAULT_NAMESPACE if namespace.to_s.empty?
         
@@ -50,13 +50,10 @@ module Wikilink
         set_namespace_converter namespace, converter if converter
         self
       end
-      alias_method :on, :on_namespace
-      alias_method :namespace, :on_namespace
 
-      def on_default_namespace(*args, &block)
-        on_namespace(DEFAULT_NAMESPACE, *args, &block)
+      def default_namespace(*args, &block)
+        namespace(DEFAULT_NAMESPACE, *args, &block)
       end
-      alias_method :default_namespace, :on_default_namespace
 
       def run(namespace, run_options)
         if converter = namespace_converter(namespace)

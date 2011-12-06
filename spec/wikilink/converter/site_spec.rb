@@ -10,9 +10,9 @@ describe Wikilink::Converter::Site do
       class SpecNamespace; end
       define_method :call do |*args|
         if namespace.to_s.empty?
-          converter.on_namespace SpecNamespace, *args
+          converter.namespace SpecNamespace, *args
         else
-          converter.on_namespace namespace, SpecNamespace, *args
+          converter.namespace namespace, SpecNamespace, *args
         end
       end
       let(:namespace_converter) { double(:namespace_converter) }
@@ -103,21 +103,21 @@ describe Wikilink::Converter::Site do
       end
     end
 
-    describe '#on_default_namespace' do
-      it 'is a shortcut of #on_namespace' do
-        converter.should_receive(:on_namespace).with(DEFAULT_NAMESPACE, 'arg')
-        converter.on_default_namespace 'arg'
+    describe '#default_namespace' do
+      it 'is a shortcut of #namespace' do
+        converter.should_receive(:namespace).with(DEFAULT_NAMESPACE, 'arg')
+        converter.default_namespace 'arg'
       end
     end
 
-    describe '#on_namespace' do
+    describe '#namespace' do
       context 'without any arguments nor block' do
         let(:default_namespace) { double(:default_namespace) }
 
         it 'does not change the default namespace handler' do
           Wikilink::Converter::Namespace::Default.should_receive(:new).
             once.and_return(default_namespace)
-          converter.on_namespace
+          converter.namespace
         end
       end
 
@@ -126,7 +126,7 @@ describe Wikilink::Converter::Site do
           yielded = double('yielded')
           yielded.should_receive(:poke)
           default_namespace.should_receive(:config).and_yield
-          converter.on_namespace do
+          converter.namespace do
             yielded.poke
           end
         end
@@ -138,7 +138,7 @@ describe Wikilink::Converter::Site do
         it 'does not change the default namespace handler' do
           Wikilink::Converter::Namespace::Default.should_receive(:new).
             once.and_return(default_namespace)
-          converter.on_namespace foo: :bar
+          converter.namespace foo: :bar
         end
       end
 
@@ -148,7 +148,7 @@ describe Wikilink::Converter::Site do
         it 'does not change the default namespace handler' do
           Wikilink::Converter::Namespace::Default.should_receive(:new).
             once.and_return(default_namespace)
-          converter.on_namespace(DEFAULT_NAMESPACE)
+          converter.namespace(DEFAULT_NAMESPACE)
         end
       end
       context 'with other namespace name' do
@@ -157,26 +157,26 @@ describe Wikilink::Converter::Site do
 
         it 'creates a new Wikilink::Converter::Namespace instance' do
           klass.should_receive(:new)
-          converter.on_namespace namespace_name
+          converter.namespace namespace_name
         end
         it 'initializes Wikilink::Converter::Namespace instance with option :site_name' do
           klass.should_receive(:new).with(hash_including(site_name: site_name))
-          converter.on_namespace namespace_name
+          converter.namespace namespace_name
         end
         it 'initializes Wikilink::Converter::Namespace instance with option :name' do
           klass.should_receive(:new).with(hash_including(name: namespace_name))
-          converter.on_namespace namespace_name
+          converter.namespace namespace_name
         end
         it 'uses the instance of Wikilink::Converter::Namespace as new namespace converter' do
           klass.should_receive(:new).and_return(namespace)
-          converter.on_namespace namespace_name
+          converter.namespace namespace_name
           namespace.should_receive(:run).and_return('it works')
           converter.run(namespace_name, run_options).should eq('it works')
         end
 
         context 'with object' do
           it 'uses that object as new namespace converter' do
-            converter.on_namespace namespace_name, namespace
+            converter.namespace namespace_name, namespace
             namespace.should_receive(:run).and_return('it works')
             converter.run(namespace_name, run_options).should eq('it works')
           end
@@ -189,7 +189,7 @@ describe Wikilink::Converter::Site do
       
       context 'with object' do
         it 'uses that object as new namespace converter' do
-          converter.on_namespace namespace
+          converter.namespace namespace
           namespace.should_receive(:run).and_return('it works')
           converter.run(DEFAULT_NAMESPACE, run_options).should eq('it works')
         end
