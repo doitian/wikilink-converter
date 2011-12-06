@@ -25,6 +25,21 @@ module Wikilink
     include ArgumentExtractor
     CURRENT_SITE = ::Wikilink::Converter::Site::CURRENT_SITE_NAME
 
+    class << self
+      extend Forwardable
+      def instance
+        @instance ||= Converter.new
+      end
+      def config
+        yield instance
+      end
+      def_delegators(:instance,
+                     :run, :execute,
+                     :namespace, :default_namespace,
+                     :site, :current_site,
+                     :action)
+    end
+
     # Setup a converter. Handlers can be registered in block directly. If no
     # handler is registered on **page**, a default handler
     # Wikilink::Converter::Page is created with the given `options`.

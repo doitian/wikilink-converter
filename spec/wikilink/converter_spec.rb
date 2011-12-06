@@ -1,7 +1,35 @@
 require File.expand_path('../../spec_helper', __FILE__)
 
+shared_examples 'singleton' do |klass|
+  describe '.instance' do
+    subject { klass }
+    its(:instance) { should be_a_kind_of(klass) }
+    it 'returns the same instances for all calls to #instance' do
+      klass.instance.should equal(klass.instance)
+    end
+  end
+end
+
 describe Wikilink::Converter do
   CURRENT_SITE = Wikilink::Converter::CURRENT_SITE
+
+  it_behaves_like 'singleton', Wikilink::Converter
+  describe '.config' do
+    it 'yields the singleton instance' do
+      Wikilink::Converter.config do |arg|
+        arg.should equal(Wikilink::Converter.instance)
+      end
+    end
+  end
+
+  %w{run execute}.each do |method|
+    describe ".#{method}" do
+      it "forwards method #{method} to #instance" do
+        Wikilink::Converter.instance.should_receive(method.to_sym).with(:arg)
+        Wikilink::Converter.send method.to_sym, :arg
+      end
+    end
+  end
 
   let(:converter) { Wikilink::Converter.new }
 
