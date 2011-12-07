@@ -64,6 +64,7 @@ module Wikilink
             colon = ':'
             inner = inner[1..-1]
           end
+          inner = inner.gsub(/&#47;/, '/')
           link, name = inner.split('|', 2)
           path, namespace, site = link.split(':', 3).reverse
 
@@ -74,7 +75,7 @@ module Wikilink
               namespace = nil
             end
           end
-          
+
           if name.to_s.empty?
             name = resolve_name(inner, run_options)
           end
@@ -83,7 +84,7 @@ module Wikilink
           if valid?(site, namespace, path)
             run_options = run_options.merge(path: path, name: name, colon: colon)
             result = convert_link(site, namespace, run_options)
-            result ? ($1 + result) : match
+            result ? (prefix + result) : match
           else
             match
           end

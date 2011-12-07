@@ -63,6 +63,12 @@ describe Wikilink::Converter do
     it 'ignores wikilink which path starts with ]' do
       subject.should convert("[[]test]]").to("[[]test]]")
     end
+    it 'unescape &#47; in inner text' do
+      subject.should convert("[[foo&#47;bar]]").to('<a href="/foo/bar">foo/bar</a>')
+    end
+    it 'ignores wikilink which path starts with ]' do
+      subject.should convert("[[]test]]").to("[[]test]]")
+    end
 
     context 'in namespace topics' do
       context 'with default handler' do
