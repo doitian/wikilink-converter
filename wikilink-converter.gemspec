@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "wikilink-converter"
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ian Yang"]
-  s.date = "2011-12-06"
+  s.date = "2011-12-07"
   s.description = "convert [[WikiLink]] to <a>"
   s.email = "me@iany.me"
   s.extra_rdoc_files = [
