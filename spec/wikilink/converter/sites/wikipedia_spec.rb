@@ -20,6 +20,6 @@ describe Wikilink::Converter::Sites::Wikipedia do
         on.site('wiki', wikipedia)
       end
     }
-    it { should convert('[[wiki:红宝石]]').to('<a class="external" href="http://zh.wikipedia.org/wiki/红宝石">wiki:红宝石</a>')}
+    it { should convert('[[wiki:红宝石]]').to('<a class="external" href="http://zh.wikipedia.org/wiki/%E7%BA%A2%E5%AE%9D%E7%9F%B3">wiki:红宝石</a>')}
   end
 end

@@ -1,4 +1,5 @@
 require 'cgi'
+require 'uri'
 
 module Wikilink
   class Converter
@@ -29,8 +30,13 @@ module Wikilink
         attributes = attributes.inject('') do |memo, (key, value)|
           memo + key.to_s + '="' + CGI.escape_html(value) + '" '
         end
+        url, fragment = url.split('#', 2)
+        url = URI.encode(url)
+        if fragment
+          url << '#' + URI.encode(fragment, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+        end
 
-        "<a #{attributes}href=\"#{CGI.escape_html url}\">#{CGI.escape_html name}</a>"
+        %Q{<a #{attributes}href="#{url}">#{CGI.escape_html name}</a>}
       end
     end
 

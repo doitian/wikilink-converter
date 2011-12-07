@@ -61,6 +61,9 @@ describe Wikilink::Converter::Namespace::Default do
     it { should convert(run_options).
       to('<a href="Home">Name</a>')
     }
+    it { should convert(path: 'foo/bar', name: 'Header 1').
+      to('<a href="foo/bar">Header 1</a>')
+    }
     it_behaves_like 'converter that keeps query fragment only path untouched'
   end
 
