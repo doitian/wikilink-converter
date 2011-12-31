@@ -31,7 +31,6 @@ module Wikilink
           memo + key.to_s + '="' + CGI.escape_html(value) + '" '
         end
         url, fragment = url.split('#', 2)
-        url = URI.encode(url)
         if fragment
           url << '#' + URI.encode(fragment, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
         end

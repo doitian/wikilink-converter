@@ -1,4 +1,5 @@
 require 'wikilink/converter/utils'
+require 'uri'
 
 module Wikilink
   class Converter
@@ -46,7 +47,12 @@ module Wikilink
           if path.nil? || path.empty?
             [query, fragment].join
           else
-            [options[:prefix], path, options[:suffix], query, fragment].join
+            if options[:prefix]
+              prefix = URI.parse(URI.escape(options[:prefix]))
+              prefix.path = File.expand_path(URI.escape(path), prefix.path)
+              path = prefix.to_s
+            end
+            [path, options[:suffix], query, fragment].join
           end
         end
       end

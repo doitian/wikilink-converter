@@ -64,6 +64,9 @@ describe Wikilink::Converter::Namespace::Default do
     it { should convert(path: 'foo/bar', name: 'Header 1').
       to('<a href="foo/bar">Header 1</a>')
     }
+    it { should convert(path: '../bar', name: 'Header 1').
+      to('<a href="../bar">Header 1</a>')
+    }
     it_behaves_like 'converter that keeps query fragment only path untouched'
   end
 
@@ -72,6 +75,9 @@ describe Wikilink::Converter::Namespace::Default do
     describe '#run' do
       subject { converter.method(:run) }
       it_behaves_like 'converter that keeps query fragment only path untouched'
+      it { should convert(path: '../blog', name: 'Header 1').
+        to('<a href="/blog">Header 1</a>')
+      }
     end
   end
 
