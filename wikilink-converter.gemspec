@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ian Yang"]
-  s.date = "2011-12-07"
+  s.date = "2011-12-31"
   s.description = "convert [[WikiLink]] to <a>"
   s.email = "me@iany.me"
   s.extra_rdoc_files = [
